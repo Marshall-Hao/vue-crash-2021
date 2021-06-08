@@ -2,28 +2,23 @@
   <div class="container">
     <Header @toggle-add-task="toggleAddTask"
     title="Task Tracker" :showAddTask="showAddTask"/>
-    <div v-show="showAddTask">
-      <AddTask @add-task="addTask"/>
-    </div>
-    <Tasks @toggle-reminder="toggleReminder" @delete-task="deleteTask" :tasks="tasks"/>
+    <router-view :showAddTask="showAddTask"></router-view>
+    <Footer />
   </div>
 </template>
 
 <script>
 import Header from './components/Header.vue';
-import Tasks from './components/Tasks.vue';
-import AddTask from './components/AddTask.vue';
+import Footer from './components/Footer.vue';
 
 export default {
   name: 'App',
   components: {
     Header,
-    Tasks,
-    AddTask,
+    Footer,
   },
   data() {
     return {
-      tasks: [],
       showAddTask: false,
     };
   },
@@ -31,90 +26,7 @@ export default {
     toggleAddTask() {
       this.showAddTask = !this.showAddTask;
     },
-    async addTask(task) {
-      const res = await fetch('api/tasks', {
-        method: 'POST',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify(task),
-      });
-
-      const data = await res.json();
-      this.tasks = [...this.tasks, data];
-    },
-    async deleteTask(id) {
-      // eslint-disable-next-line no-alert, no-restricted-globals
-      if (confirm('Are you sure?')) {
-        const res = await fetch(`api/tasks/${id}`, {
-          method: 'DELETE',
-        });
-
-        // eslint-disable-next-line no-unused-expressions
-        res.status === 200
-          ? (this.tasks = this.tasks.filter((task) => task.id !== id))
-          // eslint-disable-next-line no-alert
-          : alert('Error deleting task');
-      // this.tasks = this.tasks.filter((task) => task.id !== id);
-      }
-    },
-    async toggleReminder(id) {
-      const taskToToggle = await this.fetchTask(id);
-      const updTask = { ...taskToToggle, reminder: !taskToToggle.reminder };
-
-      const res = await fetch(`api/tasks/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify(updTask),
-      });
-
-      const data = await res.json();
-      // eslint-disable-next-line no-confusing-arrow
-      this.tasks = this.tasks.map((task) =>
-        // eslint-disable-next-line implicit-arrow-linebreak
-        task.id === id ? { ...task, reminder: !data.reminder } : task);
-    },
-    async fetchTasks() {
-      const res = await fetch('api/tasks');
-
-      const data = await res.json();
-
-      return data;
-    },
-    async fetchTask(id) {
-      const res = await fetch(`api/tasks/${id}`);
-
-      const data = await res.json();
-
-      return data;
-    },
   },
-  async created() {
-    this.tasks = await this.fetchTasks();
-    // [
-    //   {
-    //     id: 1,
-    //     text: 'Doctors Appointment',
-    //     day: 'March 1st',
-    //     reminder: true,
-    //   },
-    //   {
-    //     id: 2,
-    //     text: 'Meeting at School',
-    //     day: 'March 3rd',
-    //     reminder: true,
-    //   },
-    //   {
-    //     id: 3,
-    //     text: 'Food Shopping',
-    //     day: 'March 3rd',
-    //     reminder: false,
-    //   },
-    // ];
-  },
-
 };
 </script>
 
