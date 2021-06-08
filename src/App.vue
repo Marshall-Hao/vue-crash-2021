@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <Header title="Task Tracker"/>
-    <Tasks @delete-task="deleteTask" :tasks="tasks"/>
+    <Tasks @toggle-reminder="toggleReminder" @delete-task="deleteTask" :tasks="tasks"/>
   </div>
 </template>
 
@@ -24,9 +24,14 @@ export default {
     deleteTask(id) {
       // eslint-disable-next-line no-alert, no-restricted-globals
       if (confirm('Are you sure?')) {
-        console.log(id);
         this.tasks = this.tasks.filter((task) => task.id !== id);
       }
+    },
+    toggleReminder(id) {
+      // eslint-disable-next-line no-confusing-arrow
+      this.tasks = this.tasks.map((task) =>
+        // eslint-disable-next-line implicit-arrow-linebreak
+        task.id === id ? { ...task, reminder: !task.reminder } : task);
     },
   },
   created() {
