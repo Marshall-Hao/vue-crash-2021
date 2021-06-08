@@ -46,28 +46,36 @@ export default {
         // eslint-disable-next-line implicit-arrow-linebreak
         task.id === id ? { ...task, reminder: !task.reminder } : task);
     },
+    async fetchTask() {
+      const res = await fetch('http://localhost:5000/tasks');
+
+      const data = await res.json();
+
+      return data;
+    },
   },
-  created() {
-    this.tasks = [
-      {
-        id: 1,
-        text: 'Doctors Appointment',
-        day: 'March 1st',
-        reminder: true,
-      },
-      {
-        id: 2,
-        text: 'Meeting at School',
-        day: 'March 3rd',
-        reminder: true,
-      },
-      {
-        id: 3,
-        text: 'Food Shopping',
-        day: 'March 3rd',
-        reminder: false,
-      },
-    ];
+  async created() {
+    this.tasks = await this.fetchTask();
+    // [
+    //   {
+    //     id: 1,
+    //     text: 'Doctors Appointment',
+    //     day: 'March 1st',
+    //     reminder: true,
+    //   },
+    //   {
+    //     id: 2,
+    //     text: 'Meeting at School',
+    //     day: 'March 3rd',
+    //     reminder: true,
+    //   },
+    //   {
+    //     id: 3,
+    //     text: 'Food Shopping',
+    //     day: 'March 3rd',
+    //     reminder: false,
+    //   },
+    // ];
   },
 
 };
